@@ -1,0 +1,19 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container">
+<form method="POST">
+{{ form.hidden_tag() }}
+<div class="form-group">
+{{ form.descricao.label(class="form-control-label") }}
+{{ form.descricao(class="form-control") }}
+</div>
+<div class="form-group">
+<button type="submit" class="btn btn-primary">Salvar</button>
+</div>
+</form>
+</div>
+{% endblock %}

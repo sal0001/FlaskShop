@@ -1,0 +1,41 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<br>
+<br>
+<h1 style="text-align: center">Gerir categorias</h1>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categoria in categorias %}
+            <tr>
+                <td>{{ categoria.descricao }}</td>
+                <td>
+                    <form action="{{ url_for('updatecategoria', id=categoria.id) }}" method="POST">
+                    <button type="submit" class="btn btn-warning">Editar</button>
+                </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('removecategoria', id=categoria.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Remover</button>
+                </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="col-md-2"></div>
+</div>
+</div>
+
+
+</body>
+{% endblock %}

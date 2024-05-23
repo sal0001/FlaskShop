@@ -1,0 +1,42 @@
+{% extends "admin/index.html" %}
+{% block content %}
+<br>
+<br>
+<h1 style="text-align: center">Gerir produtos</h1>
+<br>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Categoria</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos %}
+                        <tr>
+                            <td>{{ produto.descricao }}</td>
+                            <td>{{ produto.preco }}</td>
+                            <td>{{ produto.categoria.descricao }}</td>
+                            <td>
+                                <form action="{{ url_for('updateproduto', id=produto.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-warning">Editar</button>
+                                </form>
+                                <td>
+                                <form action="{{ url_for('removeproduto', id=produto.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-danger">Remover</button>
+                                </form>
+                            </td>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+</body>
+{% endblock %}

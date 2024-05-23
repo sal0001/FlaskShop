@@ -1,0 +1,75 @@
+{% extends 'cliente/home.html' %}
+
+{% block content %}
+<style>
+    .card-img-container {
+        height: 400px; 
+        overflow: hidden; 
+    }
+    
+    .card-img-top {
+        object-fit: cover; 
+        height: 100%; 
+        width: 100%; 
+    }
+</style>
+<br>
+<br>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form action="{{ url_for('filtrar_produtos') }}" method="POST" class="d-flex">
+                <select class="form-select me-2" name="categoriaId" id="categoriaSelect">
+                    <option value="">todos</option>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </form>
+        </div>
+    </div>
+</div>
+    
+<div class="container">
+    <div class="row">
+        {% if search_results %}
+            {% for produto in search_results %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-img-container">
+                            <img class="card-img-top img-fluid" src="{{ url_for('static', filename='IMAGES/' + produto.image_url ) }}" alt="Imagem do Produto">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ produto.descricao }}</h5>
+                            <p class="card-text">Preço: {{ produto.preco }} €</p>
+                            <form action="{{ url_for('add_carrinho', produto_id=produto.id) }}" method="POST">
+                                <button type="submit" class="btn btn-primary">Adicionar ao carrinho</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% for produto in produtos %}
+                {% if not categoria_id or produto.categoria_id == categoria_id %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-img-container">
+                            <img class="card-img-top img-fluid" src="{{ url_for('static', filename='IMAGES/' + produto.image_url ) }}" alt="Imagem do Produto">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ produto.descricao }}</h5>
+                            <p class="card-text">Preço: {{ produto.preco }} €</p>
+                            <form action="{{ url_for('add_carrinho', produto_id=produto.id) }}" method="POST">
+                                <button type="submit" class="btn btn-primary">Adicionar ao carrinho</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

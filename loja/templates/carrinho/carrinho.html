@@ -1,0 +1,130 @@
+{% extends 'cliente/home.html' %}
+
+{% block content %}
+<style>
+    .remove-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .remove-button:hover {
+        color: red; 
+    }
+    .btn-finalizar {
+        width: 100%;
+    }
+</style>
+<br>
+<br>
+<section class="h-100" style="background-color: #eee;">
+    <div class="container h-100 py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-10">
+                {% for produto, quantidade in produtos %}
+                <div class="card rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 col-lg-2 col-xl-2">
+                                <img src="{{ url_for('static', filename='IMAGES/' + produto.image_url ) }}" class="img-fluid rounded-3" alt="{{ produto.nome }}">
+                                <p class="lead fw-normal mb-2">{{ produto.descricao }}</p>
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-3">
+                                <p class="lead fw-normal mb-2">{{ produto.preco }}€</p>
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-3">
+                                <label class="form-label" for="form{{ produto.id }}">Quantidade</label>
+                                <input id="form{{ produto.id }}" min="0" name="quantity" value="{{ quantidade }}" type="number" class="form-control quantity-input" data-product-id="{{ produto.id }}" />
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-3" style="display: none;">
+                                <p class="lead fw-normal mb-2" id="total{{ produto.id }}">{{ produto.preco * quantidade }}</p>
+                            </div>
+                            <form class="col-md-1 col-lg-1 col-xl-1 text-end" action="{{ url_for('remover_do_carrinho', produto_id=produto.id) }}" method="POST">
+                                <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                                <button class="remove-button text-danger" data-produto-id="{{ produto.id }}">
+                                    <i class="fas fa-trash fa-lg"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <h4>Total do Carrinho: <span id="total-carrinho">{{ total_carrinho }}€</span></h4>
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{ url_for('finalizar_encomenda') }}" method="POST">
+                            <button type="submit" class="btn btn-success btn-lg btn-finalizar">Finalizar encomenda</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card mb-4 mb-lg-0">
+                    <div class="card-body">
+                        <p><strong>We accept</strong></p>
+                        <img class="me-2" width="45px"
+                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+                            alt="Visa" />
+                        <img class="me-2" width="45px"
+                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+                            alt="American Express" />
+                        <img class="me-2" width="45px"
+                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+                            alt="Mastercard" />
+                        <img class="me-2" width="45px"
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/PayPal_logo.svg/1200px-PayPal_logo.svg.png"
+                            alt="PayPal acceptance mark" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        
+    
+        quantityInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                const productId = this.dataset.productId;
+                const newQuantity = parseInt(this.value);
+                const productPrice = parseFloat(document.querySelector(`#form${productId}`).closest('.card').querySelector('.col-md-3').innerText); 
+                const totalPriceElement = document.querySelector(`#total${productId}`);
+                const totalCarrinhoElement = document.querySelector('#total-carrinho'); 
+    
+                fetch(`/update_cart/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}' 
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao atualizar a quantidade do produto no carrinho');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                 
+                    totalPriceElement.textContent = (productPrice * newQuantity).toFixed(2) + '€';
+    
+                 
+                    let totalCarrinho = 0;
+                    document.querySelectorAll('.quantity-input').forEach(function(input) {
+                        const productId = input.dataset.productId;
+                        const quantity = parseInt(input.value);
+                        const productPrice = parseFloat(document.querySelector(`#form${productId}`).closest('.card').querySelector('.col-md-3').innerText);
+                        totalCarrinho += quantity * productPrice;
+                    });
+                    totalCarrinhoElement.textContent = totalCarrinho.toFixed(2) + '€';
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

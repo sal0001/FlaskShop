@@ -1,0 +1,23 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<body>
+    <br>
+<br>
+<h1 style="text-align: center">Adicionar categorias</h1>
+<br>
+    <div class="container" style="text-align: center">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form action="{{ url_for('addcategoria') }}" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        {{ form.descricao(class="form-control", placeholder="Nome da categoria") }}
+                    </div>
+                    <form action="{{ url_for('addcategoria') }}" method="POST">
+                        <button type="submit" class="btn btn-warning">Adicionar Categoria</button>
+                    </form>
+                </form>
+                {% endblock %}
+                

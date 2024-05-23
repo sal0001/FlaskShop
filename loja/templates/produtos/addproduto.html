@@ -1,0 +1,45 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<body>
+    <br>
+<br>
+<h1 style="text-align: center">Adicionar Produtos</h1>
+<br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <form action="{{ url_for('addproduto') }}" method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.descricao.label(class="form-label") }}
+                    {{ form.descricao(class="form-control", placeholder="Descrição do produto") }}
+                </div>
+                <div class="form-group">
+                    {{ form.preco.label(class="form-label") }}
+                    {{ form.preco(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label for="categoria_id" class="form-label">Categoria</label>
+                    <select name="categoria_id" id="categoria_id" class="form-control" required>
+                        <option value="">Selecione uma categoria</option>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    {{ form.image_url.label(class="form-label") }}
+                    {{ form.image_url(class="form-control", type="file") }}
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-warning">Adicionar Produto</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+{% endblock %}
